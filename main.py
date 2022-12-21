@@ -21,15 +21,21 @@ teams = OGLeague.teams()
 for team in teams:
     print(teams[team]['name'])
 # ask for team name
+print("------------------------------------")
+print("Enter the two teams you would like to compare")
 team_name = input("Enter first team name: ")
 team_name2 = input("Enter second team name: ")
+print("------------------------------------")
 # print team entered
 helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name), team_name)
 helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name2), team_name2)
 
 helpers.display_team_comparison(helpers.calculate_team_category_stats(OGLeague, team_name), helpers.calculate_team_category_stats(OGLeague, team_name2), team_name, team_name2)
-print("Based off of this comparison, your top waiver wire picks should be:")
+print("Based off this comparison, your top waiver wire picks should be:")
 players = OGLeague.waivers()
-print(players)
+for player in players:
+    print(player['name'])
+
+
 
 
