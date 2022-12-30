@@ -3,38 +3,41 @@ import yahoo_fantasy_api as yfa
 import data.constants as constants
 import data.helpers as helpers
 
-# connect to yahoo fantasy api
-filename = "outh2.json"
-sc = OAuth2(None, None, from_file=filename)
+from fractions import Fraction
 
-# get game object
-gm = yfa.Game(sc, 'nba')
+def main():
+    # connect to yahoo fantasy api
+    filename = "outh2.json"
+    sc = OAuth2(None, None, from_file=filename)
 
-# get league ids in year 2022
-lg = gm.league_ids(constants.CURRENT_YEAR)
+    # get game object
+    gm = yfa.Game(sc, 'nba')
 
-# create a league object of OGLeague(code 418.l.16470)
-OGLeague = gm.to_league(lg[1])
+    # get league ids in year 2022
+    lg = gm.league_ids(constants.CURRENT_YEAR)
 
-teams = OGLeague.teams()
-# get all teams in league
-for team in teams:
-    print(teams[team]['name'])
-# ask for team name
-print("------------------------------------")
-print("Enter the two teams you would like to compare")
-team_name = input("Enter first team name: ")
-team_name2 = input("Enter second team name: ")
-print("------------------------------------")
-# print team entered
-helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name), team_name)
-helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name2), team_name2)
+    # create a league object of OGLeague(code 418.l.16470)
+    OGLeague = gm.to_league(lg[1])
 
-helpers.display_team_comparison(helpers.calculate_team_category_stats(OGLeague, team_name), helpers.calculate_team_category_stats(OGLeague, team_name2), team_name, team_name2)
-print("Based off this comparison, your top waiver wire picks should be:")
-players = OGLeague.waivers()
-for player in players:
-    print(player['name'])
+    teams = OGLeague.teams()
+    # get all teams in league
+    for team in teams:
+        print(teams[team]['name'])
+    # ask for team name
+    print("------------------------------------")
+    print("Enter the two teams you would like to compare")
+    team_name = input("Enter first team name: ")
+    team_name2 = input("Enter second team name: ")
+    print("------------------------------------")
+    # print team entered
+    helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name), team_name, helpers.get_fga_total_average(team_name, OGLeague), helpers.get_fta_total_average(team_name, OGLeague))
+    helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name2), team_name2, helpers.get_fga_total_average(team_name2, OGLeague), helpers.get_fta_total_average(team_name2, OGLeague))
+
+    helpers.display_team_comparison(helpers.calculate_team_category_stats(OGLeague, team_name), helpers.calculate_team_category_stats(OGLeague, team_name2), team_name, team_name2)
+
+if __name__ == "__main__":
+    main()
+
 
 
 

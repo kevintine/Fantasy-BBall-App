@@ -1,6 +1,6 @@
 CURRENT_YEAR = 2022
-in_favour_of_width = 33
-        
+league_fg = .471
+league_ft = .780
 
 
 

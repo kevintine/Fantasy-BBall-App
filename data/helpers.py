@@ -1,5 +1,5 @@
 # Description: Helper functions for the Fantasy Basketball App
-def display_team_category_stats(team_cat_stats, team_name):
+def display_team_category_stats(team_cat_stats, team_name, fga, fta):
     print(team_name + " Stats: ")
     print("---------------------------------")
     if team_cat_stats['PTS'] == 0:
@@ -11,8 +11,8 @@ def display_team_category_stats(team_cat_stats, team_name):
     print("Total Assists: " + str(round(team_cat_stats['AST'], 1)))
     print("Total Steals: " + str(round(team_cat_stats['ST'], 1)))
     print("Total Blocks: " + str(round(team_cat_stats['BLK'], 1)))
-    print("Total Field Goal Percentage: " + str(round(team_cat_stats['FG%'], 1)))
-    print("Total Free Throw Percentage: " + str(round(team_cat_stats['FT%'], 1)))
+    print("Total Field Goal Percentage: " + "{:.3f}".format(round(fga, 3)))
+    print("Total Free Throw Percentage: " + "{:.3f}".format(round(fta, 3)))
     print("Total 3 Pointers Made: " + str(round(team_cat_stats['3PTM'], 1)))
     print("Total Turnovers: " + str(round(team_cat_stats['TO'], 1)))
     print("---------------------------------")
@@ -25,6 +25,8 @@ def calculate_team_category_stats(league, team_name):
             curr_key = teams[team]['team_key']
             curr_team = league.to_team(curr_key)
             curr_roster = curr_team.roster()
+            team_cat_stats['FG%'] == float(get_fga_total_average(curr_team, league))
+            team_cat_stats['FT%'] == float(get_fta_total_average(curr_team, league))
             for player in curr_roster:
                 curr_player = league.player_stats(player['player_id'], 'average_season')
                 if curr_player[0]['PTS'] == '-':
@@ -34,8 +36,8 @@ def calculate_team_category_stats(league, team_name):
                 team_cat_stats['AST'] += float(curr_player[0]['AST'])
                 team_cat_stats['ST'] += float(curr_player[0]['ST'])
                 team_cat_stats['BLK'] += float(curr_player[0]['BLK'])
-                team_cat_stats['FG%'] += float(curr_player[0]['FG%'])
-                team_cat_stats['FT%'] += float(curr_player[0]['FT%'])
+                # team_cat_stats['FG%'] += float(curr_player[0]['FG%'])
+                # team_cat_stats['FT%'] += float(curr_player[0]['FT%'])
                 team_cat_stats['3PTM'] += float(curr_player[0]['3PTM'])
                 team_cat_stats['TO'] += float(curr_player[0]['TO'])
     return team_cat_stats
@@ -50,8 +52,8 @@ def display_team_comparison(team1, team2, team_name1, team_name2):
     print("Total Assists: " + str(round(team_comparison_dict['AST'], 1)) + " In favour of " + display_in_favour_of(team_comparison_dict['AST'], team_name1, team_name2))
     print("Total Steals: " + str(round(team_comparison_dict['ST'], 1)) + " In favour of " + display_in_favour_of(team_comparison_dict['ST'], team_name1, team_name2))
     print("Total Blocks: " + str(round(team_comparison_dict['BLK'], 1)) + " In favour of " + display_in_favour_of(team_comparison_dict['BLK'], team_name1, team_name2))
-    print("Total Field Goal Percentage: " + str(round(team_comparison_dict['FG%'], 1)) + " In favour of " + display_in_favour_of(team_comparison_dict['FG%'], team_name1, team_name2))
-    print("Total Free Throw Percentage: " + str(round(team_comparison_dict['FT%'], 1)) + " In favour of " + display_in_favour_of(team_comparison_dict['FT%'], team_name1, team_name2))
+    print("Total Field Goal Percentage: " + str(round(team_comparison_dict['FG%'], 3)) + " In favour of " + display_in_favour_of(team_comparison_dict['FG%'], team_name1, team_name2))
+    print("Total Free Throw Percentage: " + str(round(team_comparison_dict['FT%'], 3)) + " In favour of " + display_in_favour_of(team_comparison_dict['FT%'], team_name1, team_name2))
     print("Total 3 Pointers Made: " + str(round(team_comparison_dict['3PTM'], 1)) + " In favour of " + display_in_favour_of(team_comparison_dict['3PTM'], team_name1, team_name2))
     print("Total Turnovers: " + str(round(team_comparison_dict['TO'], 1)) + " In favour of " + favour_of_turnovers(team_comparison_dict['TO'], team_name1, team_name2))
     print("---------------------------------")
@@ -71,3 +73,43 @@ def waiver_wire_analysis(OGLeague):
     for player in players:
         if players[player]['is_owned'] == False:
             pickup.append(players[player])
+def get_fga_total_average(curr_team, league):
+    fga = 0
+    fgm = 0
+    fgp = 0
+    teams = league.teams()
+    for team in teams:
+        if curr_team == teams[team]['name']:
+            curr_key = teams[team]['team_key']
+            curr_team = league.to_team(curr_key)
+            curr_roster = curr_team.roster()
+            for player in curr_roster:
+                curr_player_details = league.player_details(player['name'])
+                fgaftm = (curr_player_details[0]['player_stats']['stats'][0]['stat']['value'])
+                if fgaftm == '-/-':
+                    continue
+                # add two fractions together
+                fga = fgaftm.split('/')[1]
+                fgm = fgaftm.split('/')[0]
+                fgp = float(fgm) / float(fga)
+    return fgp
+def get_fta_total_average(curr_team, league):
+    fga = 0
+    fgm = 0
+    fgp = 0
+    teams = league.teams()
+    for team in teams:
+        if curr_team == teams[team]['name']:
+            curr_key = teams[team]['team_key']
+            curr_team = league.to_team(curr_key)
+            curr_roster = curr_team.roster()
+            for player in curr_roster:
+                curr_player_details = league.player_details(player['name'])
+                fgaftm = (curr_player_details[0]['player_stats']['stats'][2]['stat']['value'])
+                if fgaftm == '-/-':
+                    continue
+                # add two fractions together
+                fga = fgaftm.split('/')[1]
+                fgm = fgaftm.split('/')[0]
+                fgp = float(fgm) / float(fga)
+    return fgp
