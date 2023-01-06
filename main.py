@@ -2,8 +2,7 @@ from yahoo_oauth import OAuth2
 import yahoo_fantasy_api as yfa
 import data.constants as constants
 import data.helpers as helpers
-
-from fractions import Fraction
+import data.classes as classes
 
 def main():
     # connect to yahoo fantasy api
@@ -30,10 +29,17 @@ def main():
     team_name2 = input("Enter second team name: ")
     print("------------------------------------")
     # print team entered
-    helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name), team_name, helpers.get_fga_total_average(team_name, OGLeague), helpers.get_fta_total_average(team_name, OGLeague))
-    helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name2), team_name2, helpers.get_fga_total_average(team_name2, OGLeague), helpers.get_fta_total_average(team_name2, OGLeague))
+    team1 = helpers.find_team(team_name, OGLeague)
+    team2 = helpers.find_team(team_name2, OGLeague)
 
-    helpers.display_team_comparison(helpers.calculate_team_category_stats(OGLeague, team_name), helpers.calculate_team_category_stats(OGLeague, team_name2), team_name, team_name2)
+    roster1 = team1.roster()
+    for player in roster1:
+        helpers.nba_stats_grabber(player['name'])
+
+    # helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name), team_name, helpers.get_fga_total_average(team_name, OGLeague), helpers.get_fta_total_average(team_name, OGLeague))
+    # helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name2), team_name2, helpers.get_fga_total_average(team_name2, OGLeague), helpers.get_fta_total_average(team_name2, OGLeague))
+
+    # helpers.display_team_comparison(helpers.calculate_team_category_stats(OGLeague, team_name), helpers.calculate_team_category_stats(OGLeague, team_name2), team_name, team_name2)
 
 if __name__ == "__main__":
     main()

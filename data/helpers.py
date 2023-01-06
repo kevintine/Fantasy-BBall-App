@@ -1,3 +1,5 @@
+from nba_api.stats.static import players
+from nba_api.stats.endpoints import cumestatsplayer
 # Description: Helper functions for the Fantasy Basketball App
 def display_team_category_stats(team_cat_stats, team_name, fga, fta):
     print(team_name + " Stats: ")
@@ -113,3 +115,27 @@ def get_fta_total_average(curr_team, league):
                 fgm = fgaftm.split('/')[0]
                 fgp = float(fgm) / float(fga)
     return fgp
+
+# updated helper functions
+# get team
+def find_team(team_name, league):
+    teams = league.teams()
+    for team in teams:
+        if team_name == teams[team]['name']:
+            curr_key = teams[team]['team_key']
+            curr_team = league.to_team(curr_key)
+            return curr_team
+# get roster
+# get individual playerSS
+def nba_stats_grabber(player_name):
+    if (player_name == 'OG Anunoby'):
+        player_name = 'O.G. Anunoby'
+    player = players.find_players_by_full_name(player_name)
+    player_id = player[0]['id']
+    print(cumestatsplayer.CumeStatsPlayer(player_id))
+    
+# put player data into a list
+# call team add_player function
+
+
+    
