@@ -42,6 +42,7 @@ class TestPlayer(unittest.TestCase):
         self.assertEqual(team.return_gp(), 20)
 
 class TestTeam(unittest.TestCase):
+    
     def test_name(self):
         team = classes.Team('Duke')
         team2 = classes.Team("Ain't No Jokic", 8.456, 6.864, 20.5, 225.4, 89.5, 44.8, 12.5, 7.0, 28.3)

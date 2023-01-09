@@ -1,5 +1,7 @@
 from nba_api.stats.static import players
-from nba_api.stats.endpoints import cumestatsplayer
+from nba_api.stats.endpoints import playercareerstats
+import pandas as pd
+import classes as cl
 # Description: Helper functions for the Fantasy Basketball App
 def display_team_category_stats(team_cat_stats, team_name, fga, fta):
     print(team_name + " Stats: ")
@@ -128,11 +130,15 @@ def find_team(team_name, league):
 # get roster
 # get individual playerSS
 def nba_stats_grabber(player_name):
+    print(player_name)
     if (player_name == 'OG Anunoby'):
         player_name = 'O.G. Anunoby'
     player = players.find_players_by_full_name(player_name)
     player_id = player[0]['id']
-    print(cumestatsplayer.CumeStatsPlayer(player_id))
+    player_statistics = playercareerstats.PlayerCareerStats(player_id).get_data_frames()[0].tail(1)
+    player = cl.Player(player, player_statistics)['FGA', 'FGM', 'FG%', 'FTA', 'FTM', 'FT%', '3PTM', 'REB', 'AST', 'ST', 'BLK', 'TO', 'GP']
+    print(player_statistics)
+    print(player.return_threes_average())
     
 # put player data into a list
 # call team add_player function
