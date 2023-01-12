@@ -17,17 +17,19 @@ def main():
 
     # create a league object of OGLeague(code 418.l.16470)
     OGLeague = gm.to_league(lg[1])
-
     teams = OGLeague.teams()
+
     # get all teams in league
     for team in teams:
         print(teams[team]['name'])
+
     # ask for team name
     print("------------------------------------")
     print("Enter the two teams you would like to compare")
     team_name = input("Enter first team name: ")
     team_name2 = input("Enter second team name: ")
     print("------------------------------------")
+    
     # print team entered
     team1 = helpers.find_team(team_name, OGLeague)
     team2 = helpers.find_team(team_name2, OGLeague)

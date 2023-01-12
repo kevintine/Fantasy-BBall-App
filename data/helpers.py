@@ -1,8 +1,31 @@
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
 import pandas as pd
-import classes as cl
+import data.classes as classes
 # Description: Helper functions for the Fantasy Basketball App
+# updated helper functions
+# get team
+def find_team(team_name, league):
+    teams = league.teams()
+    for team in teams:
+        if team_name == teams[team]['name']:
+            curr_key = teams[team]['team_key']
+            curr_team = league.to_team(curr_key)
+            return curr_team
+# get individual playerSS
+# why in this function sometimes the api can successfully get the player details and sometimes it can't
+# requests.exceptions.ReadTimeout: HTTPSConnectionPool(host='stats.nba.com', port=443): Read timed out. (read timeout=30)
+def nba_stats_grabber(player_name):
+    pd.set_option('display.max_columns', None)  
+    if (player_name == 'OG Anunoby'):
+        player_name = 'O.G. Anunoby'
+    player = players.find_players_by_full_name(player_name)
+    player_statistics = playercareerstats.PlayerCareerStats(player[0]['id']).get_data_frames()[0].tail(1)
+    playerObj = classes.Player(player_name, player_statistics['FGA'], player_statistics['FTA'], player_statistics['FGM'], player_statistics['FTM'], player_statistics['FG3M'], player_statistics['PTS'], player_statistics['REB'], player_statistics['AST'], player_statistics['STL'], player_statistics['BLK'], player_statistics['TOV'], player_statistics['GP'])
+    print(playerObj.display())
+# put player data into a list
+# call team add_player function
+############################################################################################################
 def display_team_category_stats(team_cat_stats, team_name, fga, fta):
     print(team_name + " Stats: ")
     print("---------------------------------")
@@ -118,30 +141,6 @@ def get_fta_total_average(curr_team, league):
                 fgp = float(fgm) / float(fga)
     return fgp
 
-# updated helper functions
-# get team
-def find_team(team_name, league):
-    teams = league.teams()
-    for team in teams:
-        if team_name == teams[team]['name']:
-            curr_key = teams[team]['team_key']
-            curr_team = league.to_team(curr_key)
-            return curr_team
-# get roster
-# get individual playerSS
-def nba_stats_grabber(player_name):
-    print(player_name)
-    if (player_name == 'OG Anunoby'):
-        player_name = 'O.G. Anunoby'
-    player = players.find_players_by_full_name(player_name)
-    player_id = player[0]['id']
-    player_statistics = playercareerstats.PlayerCareerStats(player_id).get_data_frames()[0].tail(1)
-    player = cl.Player(player, player_statistics)['FGA', 'FGM', 'FG%', 'FTA', 'FTM', 'FT%', '3PTM', 'REB', 'AST', 'ST', 'BLK', 'TO', 'GP']
-    print(player_statistics)
-    print(player.return_threes_average())
-    
-# put player data into a list
-# call team add_player function
 
 
     
