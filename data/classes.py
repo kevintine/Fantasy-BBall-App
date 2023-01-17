@@ -1,6 +1,6 @@
 import data.constants as c
+import data.helpers as h
 from tabulate import tabulate
-from decimal import Decimal, ROUND_HALF_UP
 # create class
 class Player:
     def __init__(self, name, fga, fta, fgm, ftm, threes, pts, reb, ast, stl, blk, tov, gp):
@@ -32,24 +32,25 @@ class Player:
         z_score = x * round(self.fta/self.gp, 1)
         return round(z_score, 3)
     def return_threes_average(self):
-        return float(Decimal(self.threes / self.gp).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP))
+        return h.round_up(self.threes / self.gp)
     def return_pts_average(self):
-        return float(Decimal(self.pts / self.gp).quantize(Decimal('0.1'), rounding=ROUND_HALF_UP))
+        return h.round_up(self.pts / self.gp)
     def return_reb_average(self):
-        return round(self.reb / self.gp, 1)
+        return h.round_up(self.reb / self.gp)
     def return_ast_average(self):
-        return round(self.ast / self.gp, 1)
+        return h.round_up(self.ast / self.gp)
     def return_stl_average(self):
-        return round(self.stl / self.gp, 1)
-    def return_blk_avov_average(self):
-        return round(self.tov / self.gp, 1)
+        return h.round_up(self.stl / self.gp)
+    def return_blk_average(self):
+        return h.round_up(self.blk / self.gp)
+    def return_tov_average(self):
+        return h.round_up(self.tov / self.gp)
     def return_gp(self):
         return self.gp
     def display(self):
         d = [self.__name__(), self.__calulate_fg_z_score__(), self.__calculate_ft_z_score__(), self.return_threes_average(), self.return_pts_average(), self.return_reb_average(), self.return_ast_average(), self.return_stl_average(), self.return_blk_avov_average(), self.return_tov_average()];
         print(tabulate([d], headers=['Name', 'FG Z-Score', 'FT Z-Score', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt='orgtbl'));
-        
-        
+       
 class Team:
     def __init__(self, team_name = '', fg_z_score = 0, ft_z_score = 0, threes = 0, pts = 0, reb =  0, ast = 0, stl = 0, blk = 0, tov = 0, players = None):
         self.team_name = team_name

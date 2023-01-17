@@ -2,8 +2,20 @@ from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
 import pandas as pd
 import data.classes as classes
+from math import ceil
 # Description: Helper functions for the Fantasy Basketball App
 # updated helper functions
+def round_up(num):
+    other_num = round(num % 0.1, 10)
+    if ((num * 10) % 1 == 0):
+        return num
+    if other_num == 0.05:
+        return round((ceil(num * 10 ** 1) / 10 ** 1), 10)
+    elif other_num < 0.05:
+        return round((ceil(num * 10 ** 1) / 10 ** 1) - 0.1, 10)
+    else:
+        return round((ceil(num * 10 ** 1) / 10 ** 1), 10)
+    # return round(num, 10) 
 # get team
 def find_team(team_name, league):
     teams = league.teams()
@@ -25,6 +37,7 @@ def nba_stats_grabber(player_name):
     print(playerObj.display())
 # put player data into a list
 # call team add_player function
+
 ############################################################################################################
 def display_team_category_stats(team_cat_stats, team_name, fga, fta):
     print(team_name + " Stats: ")
