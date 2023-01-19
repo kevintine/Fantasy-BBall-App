@@ -3,7 +3,7 @@ import data.helpers as h
 from tabulate import tabulate
 # create class
 class Player:
-    def __init__(self, name, fga, fta, fgm, ftm, threes, pts, reb, ast, stl, blk, tov, gp):
+    def __init__(self, name, fga = 0, fta = 0, fgm = 0, ftm = 0, threes = 0, pts = 0, reb = 0, ast = 0, stl = 0, blk = 0, tov = 0, gp = 0):
         self.name = name
         self.fga = fga
         self.fta = fta
@@ -17,6 +17,10 @@ class Player:
         self.blk = blk
         self.tov = tov
         self.gp = gp
+    # create copy method
+    def copy(self):
+        return Player(self.name, self.fga, self.fta, self.fgm, self.ftm, self.threes, self.pts, self.reb, self.ast, self.stl, self.blk, self.tov, self.gp)
+
     def __name__(self):
         return self.name
     def __calculate_fg_average__(self):
@@ -48,8 +52,10 @@ class Player:
     def return_gp(self):
         return self.gp
     def display(self):
-        d = [self.__name__(), self.__calulate_fg_z_score__(), self.__calculate_ft_z_score__(), self.return_threes_average(), self.return_pts_average(), self.return_reb_average(), self.return_ast_average(), self.return_stl_average(), self.return_blk_avov_average(), self.return_tov_average()];
-        print(tabulate([d], headers=['Name', 'FG Z-Score', 'FT Z-Score', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt='orgtbl'));
+        table_data = [self.__name__(), self.__calculate_fg_average__(), self.__calculate_ft_average__(), self.return_threes_average(), self.return_pts_average(), self.return_reb_average(), self.return_ast_average(), self.return_stl_average(), self.return_blk_average(), self.return_tov_average()]
+        print(tabulate([table_data], headers = ['Name', 'FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
+
+        
        
 class Team:
     def __init__(self, team_name = '', fg_z_score = 0, ft_z_score = 0, threes = 0, pts = 0, reb =  0, ast = 0, stl = 0, blk = 0, tov = 0, players = None):
@@ -99,6 +105,8 @@ class Team:
         return self.tov
     def return_number_of_players(self):
         return self.players.__len__()
-
+    def display(self):
+        table_data = [self.__name__(), self.return_fg_z_score(), self.return_ft_z_score(), self.return_threes_average(), self.return_pts_average(), self.return_reb_average(), self.return_ast_average(), self.return_stl_average(), self.return_blk_average(), self.return_tov_average()]
+        print(tabulate([table_data], headers = ['Name', 'FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
         
     

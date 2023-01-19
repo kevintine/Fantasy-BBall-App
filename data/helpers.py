@@ -33,10 +33,13 @@ def nba_stats_grabber(player_name):
         player_name = 'O.G. Anunoby'
     player = players.find_players_by_full_name(player_name)
     player_statistics = playercareerstats.PlayerCareerStats(player[0]['id']).get_data_frames()[0].tail(1)
-    playerObj = classes.Player(player_name, player_statistics['FGA'], player_statistics['FTA'], player_statistics['FGM'], player_statistics['FTM'], player_statistics['FG3M'], player_statistics['PTS'], player_statistics['REB'], player_statistics['AST'], player_statistics['STL'], player_statistics['BLK'], player_statistics['TOV'], player_statistics['GP'])
-    print(playerObj.display())
+    playerObj = classes.Player(player_name, player_statistics.iloc[0]['FGA'], player_statistics.iloc[0]['FTA'], player_statistics.iloc[0]['FGM'], player_statistics.iloc[0]['FTM'], player_statistics.iloc[0]['FG3M'], player_statistics.iloc[0]['PTS'], player_statistics.iloc[0]['REB'], player_statistics.iloc[0]['AST'], player_statistics.iloc[0]['STL'], player_statistics.iloc[0]['BLK'], player_statistics.iloc[0]['TOV'], player_statistics.iloc[0]['GP'])
+    return playerObj
+
 # put player data into a list
 # call team add_player function
+# add player to team
+
 
 ############################################################################################################
 def display_team_category_stats(team_cat_stats, team_name, fga, fta):

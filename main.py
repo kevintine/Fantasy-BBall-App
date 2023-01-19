@@ -3,6 +3,7 @@ import yahoo_fantasy_api as yfa
 import data.constants as constants
 import data.helpers as helpers
 import data.classes as classes
+import copy
 
 def main():
     # connect to yahoo fantasy api
@@ -35,8 +36,27 @@ def main():
     team2 = helpers.find_team(team_name2, OGLeague)
 
     roster1 = team1.roster()
+    roster2 = team2.roster()
+
+    #create team class objects
+    team1 = classes.Team(team_name)
+    team2 = classes.Team(team_name2)
+
+    #get roster of team
     for player in roster1:
-        helpers.nba_stats_grabber(player['name'])
+        # create empty player object
+        playerObj = classes.Player(player['name'])
+        # get player stats 
+        # copy into player object
+        playerObj = helpers.nba_stats_grabber(player['name']).copy()
+        # add player object to team 
+        team1.add_player(playerObj)
+    
+
+    print(team1.return_number_of_players())
+    print(team1.display())
+
+
 
     # helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name), team_name, helpers.get_fga_total_average(team_name, OGLeague), helpers.get_fta_total_average(team_name, OGLeague))
     # helpers.display_team_category_stats(helpers.calculate_team_category_stats(OGLeague, team_name2), team_name2, helpers.get_fga_total_average(team_name2, OGLeague), helpers.get_fta_total_average(team_name2, OGLeague))
