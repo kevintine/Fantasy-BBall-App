@@ -3,6 +3,7 @@ from nba_api.stats.endpoints import playercareerstats
 import pandas as pd
 import data.classes as classes
 from math import ceil
+stats = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV']
 # Description: Helper functions for the Fantasy Basketball App
 # updated helper functions
 def round_up(num):
@@ -35,10 +36,51 @@ def nba_stats_grabber(player_name):
     player_statistics = playercareerstats.PlayerCareerStats(player[0]['id']).get_data_frames()[0].tail(1)
     playerObj = classes.Player(player_name, player_statistics.iloc[0]['FGA'], player_statistics.iloc[0]['FTA'], player_statistics.iloc[0]['FGM'], player_statistics.iloc[0]['FTM'], player_statistics.iloc[0]['FG3M'], player_statistics.iloc[0]['PTS'], player_statistics.iloc[0]['REB'], player_statistics.iloc[0]['AST'], player_statistics.iloc[0]['STL'], player_statistics.iloc[0]['BLK'], player_statistics.iloc[0]['TOV'], player_statistics.iloc[0]['GP'])
     return playerObj
-
-# put player data into a list
-# call team add_player function
-# add player to team
+# team comparison
+def team_comparison(team1, team2):
+    #initialize team stats list
+    team_stats = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    team_stats[0] = team1.return_fg_z_score() - team2.return_fg_z_score()
+    team_stats[1] = team1.return_ft_z_score() - team2.return_ft_z_score()
+    team_stats[2] = team1.return_threes_average() - team2.return_threes_average()
+    team_stats[3] = team1.return_pts_average() - team2.return_pts_average()
+    team_stats[4] = team1.return_reb_average() - team2.return_reb_average()
+    team_stats[5] = team1.return_ast_average() - team2.return_ast_average()
+    team_stats[6] = team1.return_stl_average() - team2.return_stl_average()
+    team_stats[7] = team1.return_blk_average() - team2.return_blk_average()
+    team_stats[8] = team1.return_tov_average() - team2.return_tov_average()
+    return team_stats
+#print team comparison
+def print_team_comparison(team_stats):      
+    print("Team Comparison: ")
+    print("---------------------------------")
+    print("FG%: " + print_team_comparison_helper(team_stats[0]))
+    print("FT%: " + print_team_comparison_helper(team_stats[1]))
+    print("3PTM: " + print_team_comparison_helper(team_stats[2]))
+    print("PTS: " + print_team_comparison_helper(team_stats[3]))
+    print("REB: " + print_team_comparison_helper(team_stats[4]))
+    print("AST: " + print_team_comparison_helper(team_stats[5]))
+    print("STL: " + print_team_comparison_helper(team_stats[6]))
+    print("BLK: " + print_team_comparison_helper(team_stats[7]))
+    print("TO: " + print_team_comparison_helper(team_stats[8]))
+    print("---------------------------------")
+def print_team_comparison_helper(team_stats, cat):
+    return_string = ''
+    if (cat == 'FG%' or cat == 'FT%'):
+        if (team_stats < 0):
+            team_stats = team_stats * -1
+            return_string = str(round_up(team_stats)) + '% losing'
+            return return_string
+        else:
+            return_string = str(round_up(team_stats)) + '% winning'
+            return return_string
+    if (team_stats < 0):
+        team_stats = team_stats * -1
+        return_string = str(round_up(team_stats)) + ' losing'
+        return return_string
+    else:
+        return_string = str(round_up(team_stats)) + ' winning'
+        return return_string
 
 
 ############################################################################################################

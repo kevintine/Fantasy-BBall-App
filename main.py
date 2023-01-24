@@ -52,9 +52,21 @@ def main():
         # add player object to team 
         team1.add_player(playerObj)
     
+        #get roster of team
+    for player in roster2:
+        # create empty player object
+        playerObj = classes.Player(player['name'])
+        # get player stats 
+        # copy into player object
+        playerObj = helpers.nba_stats_grabber(player['name']).copy()
+        # add player object to team 
+        team2.add_player(playerObj)
 
-    print(team1.return_number_of_players())
     print(team1.display())
+    print(team2.display())
+
+    team_stats = helpers.team_comparison(team1, team2)
+    helpers.print_team_comparison(team_stats)
 
 
 
