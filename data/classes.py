@@ -1,6 +1,8 @@
 import data.constants as c
 import data.helpers as h
 from tabulate import tabulate
+
+categories = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV']
 # create class
 class Player:
     def __init__(self, name, fga = 0, fta = 0, fgm = 0, ftm = 0, threes = 0, pts = 0, reb = 0, ast = 0, stl = 0, blk = 0, tov = 0, gp = 0):
@@ -107,5 +109,36 @@ class Team:
         print(tabulate([table_data], headers = ['Name', 'FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
 # takes two teams to initialize this class
 # will compare the two teams and recommend a player to trade for
-# class Analyzer:
+class Analyzer:
+    def __init__(self, team1, team2):
+        self.team1 = team1
+        self.team2 = team2
+    def team_comparison(self):
+        team_stats = [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        team_stats[0] = self.team1.return_fg_z_score() - self.team2.return_fg_z_score()
+        team_stats[1] = self.team1.return_ft_z_score() - self.team2.return_ft_z_score()
+        team_stats[2] = self.team1.return_threes_average() - self.team2.return_threes_average()
+        team_stats[3] = self.team1.return_pts_average() - self.team2.return_pts_average()
+        team_stats[4] = self.team1.return_reb_average() - self.team2.return_reb_average()
+        team_stats[5] = self.team1.return_ast_average() - self.team2.return_ast_average()
+        team_stats[6] = self.team1.return_stl_average() - self.team2.return_stl_average()
+        team_stats[7] = self.team1.return_blk_average() - self.team2.return_blk_average()
+        team_stats[8] = self.team1.return_tov_average() - self.team2.return_tov_average()
+        return team_stats
+    def display(self):
+        team_stats = self.team_comparison()
+        return_string = ''
+        for i in categories:
+            if (team_stats[i] > 0):
+                return_string += categories[i] + ': ' + team_stats[i] + ' winning'
+                print(return_string)
+            else:
+                team_stats[i] = team_stats[i] * -1
+                return_string += categories[i] + ': ' + team_stats[i] + ' losing'
+                print(return_string)
+        
+
+
+
+    
 

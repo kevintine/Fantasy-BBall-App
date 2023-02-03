@@ -3,7 +3,7 @@ import yahoo_fantasy_api as yfa
 import data.constants as constants
 import data.helpers as helpers
 import data.classes as classes
-import copy
+from PyQt5.QtWidgets import *
 
 def main():
     # connect to yahoo fantasy api
@@ -52,7 +52,7 @@ def main():
         # add player object to team 
         team1.add_player(playerObj)
     
-        #get roster of team
+    #get roster of team
     for player in roster2:
         # create empty player object
         playerObj = classes.Player(player['name'])
@@ -65,8 +65,8 @@ def main():
     print(team1.display())
     print(team2.display())
 
-    team_stats = helpers.team_comparison(team1, team2)
-    helpers.print_team_comparison(team_stats)
+    comparison = classes.Analyzer(team1, team2)
+    print(comparison.display())
 
 
 
