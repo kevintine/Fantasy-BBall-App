@@ -3,7 +3,7 @@ import data.helpers as h
 from tabulate import tabulate
 
 categories = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV']
-# create class
+
 class Player:
     def __init__(self, name, fga = 0, fta = 0, fgm = 0, ftm = 0, threes = 0, pts = 0, reb = 0, ast = 0, stl = 0, blk = 0, tov = 0, gp = 0):
         self.name = name
@@ -54,8 +54,7 @@ class Player:
         return self.gp
     def display(self):
         table_data = [self.__name__(), self.__calculate_fg_average__(), self.__calculate_ft_average__(), self.return_threes_average(), self.return_pts_average(), self.return_reb_average(), self.return_ast_average(), self.return_stl_average(), self.return_blk_average(), self.return_tov_average()]
-        print(tabulate([table_data], headers = ['Name', 'FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))     
-       
+        print(tabulate([table_data], headers = ['Name', 'FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))          
 class Team:
     def __init__(self, team_name = '', fg_z_score = 0, ft_z_score = 0, threes = 0, pts = 0, reb =  0, ast = 0, stl = 0, blk = 0, tov = 0, players = None):
         self.team_name = team_name
@@ -133,13 +132,12 @@ class Analyzer:
         # another way of printing it
         table_data = [self.team_comparison()]
         print(tabulate(table_data, headers = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
-# initilize the yahoo api
+# initilaize the yahoo api
 class YahooFantasyApi:
-    def __init__(self, league_id, team_id, client_id, client_secret):
-        self.league_id = league_id
-        self.team_id = team_id
-        self.client_id = client_id
-        self.client_secret = client_secret
+    def __init__(self, filename):
+        self.filename = filename
+    def get_league(self):
+        return 0
 
 
 

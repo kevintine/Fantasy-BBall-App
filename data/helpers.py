@@ -2,6 +2,7 @@ from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
 import pandas as pd
 import data.classes as classes
+import time
 from math import ceil
 stats = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV']
 # Description: Helper functions for the Fantasy Basketball App
@@ -35,6 +36,9 @@ def nba_stats_grabber(player_name):
     player = players.find_players_by_full_name(player_name)
     player_statistics = playercareerstats.PlayerCareerStats(player[0]['id']).get_data_frames()[0].tail(1)
     playerObj = classes.Player(player_name, player_statistics.iloc[0]['FGA'], player_statistics.iloc[0]['FTA'], player_statistics.iloc[0]['FGM'], player_statistics.iloc[0]['FTM'], player_statistics.iloc[0]['FG3M'], player_statistics.iloc[0]['PTS'], player_statistics.iloc[0]['REB'], player_statistics.iloc[0]['AST'], player_statistics.iloc[0]['STL'], player_statistics.iloc[0]['BLK'], player_statistics.iloc[0]['TOV'], player_statistics.iloc[0]['GP'])
+    time.sleep(2)
+
+    print("Found Player: " + player_name)
     return playerObj
 # team comparison
 def team_comparison(team1, team2):

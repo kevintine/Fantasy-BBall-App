@@ -1,3 +1,5 @@
+# interesting, the timeouts are not happening anymore. I used to get timeouts nearly all the time when requesting data
+# from the nba api. Now that I added a time.sleep(2) in the nba_stats_grabber function, I am not getting timeouts anymore
 from yahoo_oauth import OAuth2
 import yahoo_fantasy_api as yfa
 import data.constants as constants
@@ -41,27 +43,30 @@ def main():
     #create team class objects
     team1 = classes.Team(team_name)
     team2 = classes.Team(team_name2)
-
+    print("Created Team Objects...")
     #get roster of team
     for player in roster1:
         # create empty player object
         playerObj = classes.Player(player['name'])
         # get player stats 
         # copy into player object
+        print("Getting player stats for " + player['name'])
+
         playerObj = helpers.nba_stats_grabber(player['name']).copy()
         # add player object to team 
         team1.add_player(playerObj)
-    
+    print("Found Team 1 players...")
     #get roster of team
     for player in roster2:
         # create empty player object
         playerObj = classes.Player(player['name'])
         # get player stats 
         # copy into player object
+        print("Getting player stats for " + player['name'])
         playerObj = helpers.nba_stats_grabber(player['name']).copy()
         # add player object to team 
         team2.add_player(playerObj)
-
+    print("Found Team 2 players...")
     print(team1.display())
     print(team2.display())
 
