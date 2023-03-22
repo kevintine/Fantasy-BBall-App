@@ -126,16 +126,23 @@ class Analyzer:
         team_stats[8] = self.team1.return_tov_average() - self.team2.return_tov_average()
         return team_stats
     def display(self):
-        team_stats = self.team_comparison()
-        return_string = ''
-        for i in categories:
-            if (team_stats[i] > 0):
-                return_string += categories[i] + ': ' + team_stats[i] + ' winning'
-                print(return_string)
-            else:
-                team_stats[i] = team_stats[i] * -1
-                return_string += categories[i] + ': ' + team_stats[i] + ' losing'
-                print(return_string)
+        # one way of printing it
+        comparing_team_stats = self.team_comparison()
+        for stat in comparing_team_stats:
+            print(stat)
+        # another way of printing it
+        table_data = [self.team_comparison()]
+        print(tabulate(table_data, headers = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
+# initilize the yahoo api
+class YahooFantasyApi:
+    def __init__(self, league_id, team_id, client_id, client_secret):
+        self.league_id = league_id
+        self.team_id = team_id
+        self.client_id = client_id
+        self.client_secret = client_secret
+
+
+
         
 
 
