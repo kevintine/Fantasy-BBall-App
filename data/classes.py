@@ -1,3 +1,5 @@
+from yahoo_oauth import OAuth2
+import yahoo_fantasy_api as yfa
 import data.constants as c
 import data.helpers as h
 from tabulate import tabulate
@@ -125,18 +127,77 @@ class Analyzer:
         team_stats[8] = self.team1.return_tov_average() - self.team2.return_tov_average()
         return team_stats
     def display(self):
-        # one way of printing it
         comparing_team_stats = self.team_comparison()
-        for stat in comparing_team_stats:
-            print(stat)
-        # another way of printing it
         table_data = [self.team_comparison()]
         print(tabulate(table_data, headers = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
 # initilaize the yahoo api
 class YahooFantasyApi:
-    def __init__(self, filename):
+    def __init__(self, filename, team1 = None, team2 = None):
         self.filename = filename
+        self.league = None
+        self.team1 = team1
+        self.team2 = team2
     def get_league(self):
+        # connect to yahoo fantasy api
+        sc = OAuth2(None, None, from_file=self.filename)
+        # get game object
+        gm = yfa.Game(sc, 'nba')
+        # create a league object of OGLeague(code 418.l.16470)
+        lg = gm.league_ids(c.CURRENT_YEAR)
+        self.league = gm.to_league(lg[1])
+
+        teams = self.league.teams()
+        for team in teams:
+            print(teams[team]['name'])
+        return 0
+    def find_and_compare_two_teams(self):
+        print("------------------------------------")
+        print("Enter the two teams you would like to compare")
+        team1_name = input("Enter first team name: ")
+        team2_name = input("Enter second team name: ")
+        print("------------------------------------")
+        team1 = h.find_team(team1_name, self.league)
+        team2 = h.find_team(team2_name, self.league)
+        roster1 = team1.roster()
+        roster2 = team2.roster()
+        team1 = Team(team1_name)
+        team2 = Team(team2_name)
+        print("Created Team Objects...")
+        for player in roster1:
+            # create empty player object
+            playerObj = Player(player['name'])
+            # get player stats 
+            # copy into player object
+            print("Getting player stats for " + player['name'])
+
+            playerObj = h.nba_stats_grabber(player['name']).copy()
+            # add player object to team 
+            team1.add_player(playerObj)
+        print("Finished getting stats for " + team1_name)
+        for player in roster2:
+            # create empty player object
+            playerObj = Player(player['name'])
+            # get player stats 
+            # copy into player object
+            print("Getting player stats for " + player['name'])
+            playerObj = h.nba_stats_grabber(player['name']).copy()
+            # add player object to team 
+            team2.add_player(playerObj)
+        print("Finished getting stats for " + team2_name)
+        print(team1.display())
+        print(team2.display())
+        comparison = Analyzer(team1, team2)
+        print(comparison.display())
+        return 0
+    def get_free_agents(self):
+        print("------------------------------------")
+        print("Enter the team you would like to get free agents for")
+        team_name = input("Enter team name: ")
+        print("------------------------------------")
+        team = h.find_team(team_name, self.league)
+        free_agents = team.free_agents()
+        for player in free_agents:
+            print(player['name'])
         return 0
 
 
