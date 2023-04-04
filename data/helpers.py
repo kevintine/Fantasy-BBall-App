@@ -35,9 +35,16 @@ def nba_stats_grabber(player_name):
         player_name = 'O.G. Anunoby'
     player = players.find_players_by_full_name(player_name)
     player_statistics = playercareerstats.PlayerCareerStats(player[0]['id']).get_data_frames()[0].tail(1)
+    #     PLAYER_ID SEASON_ID LEAGUE_ID     TEAM_ID TEAM_ABBREVIATION  PLAYER_AGE  \
+    # 19       2544   2022-23        00  1610612747               LAL        38.0   
+
+    #     GP  GS     MIN  FGM   FGA  FG_PCT  FG3M  FG3A  FG3_PCT  FTM  FTA  FT_PCT  \
+    # 19  51  50  1818.0  563  1128   0.499   103   340    0.303  239  312   0.766
+
+    #     OREB  DREB  REB  AST  STL  BLK  TOV  PF   PTS
+    # 19    64   368  432  350   47   29  160  85  1468
     playerObj = classes.Player(player_name, player_statistics.iloc[0]['FGA'], player_statistics.iloc[0]['FTA'], player_statistics.iloc[0]['FGM'], player_statistics.iloc[0]['FTM'], player_statistics.iloc[0]['FG3M'], player_statistics.iloc[0]['PTS'], player_statistics.iloc[0]['REB'], player_statistics.iloc[0]['AST'], player_statistics.iloc[0]['STL'], player_statistics.iloc[0]['BLK'], player_statistics.iloc[0]['TOV'], player_statistics.iloc[0]['GP'])
     time.sleep(2)
-
     print("Found Player: " + player_name)
     return playerObj
 # team comparison

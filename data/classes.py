@@ -1,8 +1,15 @@
 from yahoo_oauth import OAuth2
 import yahoo_fantasy_api as yfa
-import data.constants as c
-import data.helpers as h
+import data.constants as constants
+import data.helpers as helpers
+import data.classes as classes
 from tabulate import tabulate
+from nba_api.stats.static import players
+from nba_api.stats.endpoints import playercareerstats
+from nba_api.stats.endpoints import PlayerFantasyProfile
+from nba_api.stats.endpoints import PlayerDashboardByLastNGames
+import pandas as pd
+import time
 
 categories = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV']
 
@@ -31,27 +38,27 @@ class Player:
     def __calculate_ft_average__(self):
         return round(self.ftm / self.fta, 3)
     def __calulate_fg_z_score__(self):
-        x = self.__calculate_fg_average__() - c.league_fg
+        x = self.__calculate_fg_average__() - constants.league_fg
         z_score = x * round(self.fga/self.gp, 1)
         return round(z_score, 3)
     def __calculate_ft_z_score__(self):
-        x = self.__calculate_ft_average__() - c.league_ft
+        x = self.__calculate_ft_average__() - constants.league_ft
         z_score = x * round(self.fta/self.gp, 1)
         return round(z_score, 3)
     def return_threes_average(self):
-        return h.round_up(self.threes / self.gp)
+        return helpers.round_up(self.threes / self.gp)
     def return_pts_average(self):
-        return h.round_up(self.pts / self.gp)
+        return helpers.round_up(self.pts / self.gp)
     def return_reb_average(self):
-        return h.round_up(self.reb / self.gp)
+        return helpers.round_up(self.reb / self.gp)
     def return_ast_average(self):
-        return h.round_up(self.ast / self.gp)
+        return helpers.round_up(self.ast / self.gp)
     def return_stl_average(self):
-        return h.round_up(self.stl / self.gp)
+        return helpers.round_up(self.stl / self.gp)
     def return_blk_average(self):
-        return h.round_up(self.blk / self.gp)
+        return helpers.round_up(self.blk / self.gp)
     def return_tov_average(self):
-        return h.round_up(self.tov / self.gp)
+        return helpers.round_up(self.tov / self.gp)
     def return_gp(self):
         return self.gp
     def display(self):
@@ -156,8 +163,8 @@ class YahooFantasyApi:
         team1_name = input("Enter first team name: ")
         team2_name = input("Enter second team name: ")
         print("------------------------------------")
-        team1 = h.find_team(team1_name, self.league)
-        team2 = h.find_team(team2_name, self.league)
+        team1 = helpers.find_team(team1_name, self.league)
+        team2 = helpers.find_team(team2_name, self.league)
         roster1 = team1.roster()
         roster2 = team2.roster()
         team1 = Team(team1_name)
@@ -180,7 +187,7 @@ class YahooFantasyApi:
             # get player stats 
             # copy into player object
             print("Getting player stats for " + player['name'])
-            playerObj = h.nba_stats_grabber(player['name']).copy()
+            playerObj = helpers.nba_stats_grabber(player['name']).copy()
             # add player object to team 
             team2.add_player(playerObj)
         print("Finished getting stats for " + team2_name)
@@ -189,16 +196,84 @@ class YahooFantasyApi:
         comparison = Analyzer(team1, team2)
         print(comparison.display())
         return 0
+    def get_team(self, team_name):
+        team = helpers.find_team(team_name, self.league)
+        roster = team.roster()
+        team = Team(team_name)
+        for player in roster:
+            # create empty player object
+            playerObj = Player(player['name'])
+            # get player stats 
+            # copy into player object
+            print("Getting player stats for " + player['name'])
+            playerObj = h.nba_stats_grabber(player['name']).copy()
+            # add player object to team 
+            team.add_player(playerObj)
+        print("Finished getting stats for " + team_name)
+        return team
     def get_free_agents(self):
+        free_agents = self.league.free_agents()
+        return free_agents
+    
+class NBAApiClassHelper:
+    def __init__(self):
+        pass
+    def number_of_games(self):
         print("------------------------------------")
-        print("Enter the team you would like to get free agents for")
-        team_name = input("Enter team name: ")
+        print("Would you like to use the last 5, 10, 15, or 20 games?")
+        num_of_games = input("Enter number of games: ")
+        if (num_of_games == '5' or num_of_games == '10' or num_of_games == '15' or num_of_games == '20'):
+            num_of_games = int(num_of_games)
+        else:
+            print("Invalid input, using 82 games")
+            num_of_games = 82
         print("------------------------------------")
-        team = h.find_team(team_name, self.league)
-        free_agents = team.free_agents()
-        for player in free_agents:
-            print(player['name'])
+        return num_of_games
+    def get_player_stats(self, player_name, num_of_games = 82):
+        if (num_of_games != 82 and num_of_games != 5 and num_of_games != 10 and num_of_games != 15 and num_of_games != 20):
+            num_of_games = 82
+        pd.set_option('display.max_columns', None)  
+        if (player_name == 'OG Anunoby'):
+            player_name = 'O.G. Anunoby'
+        player = players.find_players_by_full_name(player_name)
+        if (num_of_games == 5):
+            player_statistics = PlayerDashboardByLastNGames(player_id = player[0]['id']).last5_player_dashboard.get_data_frame()
+        if (num_of_games == 10):
+            player_statistics = PlayerDashboardByLastNGames(player_id = player[0]['id']).last10_player_dashboard.get_data_frame()
+        if (num_of_games == 15):
+            player_statistics = PlayerDashboardByLastNGames(player_id = player[0]['id']).last15_player_dashboard.get_data_frame()
+        if (num_of_games == 20):
+            player_statistics = PlayerDashboardByLastNGames(player_id = player[0]['id']).last20_player_dashboard.get_data_frame()
+        if (num_of_games == 82):
+            player_statistics = PlayerDashboardByLastNGames(player_id = player[0]['id']).overall_player_dashboard.get_data_frame()
+        playerObj = classes.Player(player_name, player_statistics.iloc[0]['FGA'], player_statistics.iloc[0]['FTA'], player_statistics.iloc[0]['FGM'], player_statistics.iloc[0]['FTM'], player_statistics.iloc[0]['FG3M'], player_statistics.iloc[0]['PTS'], player_statistics.iloc[0]['REB'], player_statistics.iloc[0]['AST'], player_statistics.iloc[0]['STL'], player_statistics.iloc[0]['BLK'], player_statistics.iloc[0]['TOV'], player_statistics.iloc[0]['GP'])
+        time.sleep(2)
+        print("Found Player: " + player_name)
+        return playerObj
+    def find_team(self, team_name, league):
+        teams = league.teams()
+        for team in teams:
+            if teams[team]['name'] == team_name:
+                return league.to_team(teams[team]['team_key'])
         return 0
+    def find_player(self, player_name, league):
+        players = league.players()
+        for player in players:
+            if players[player]['name'] == player_name:
+                return league.to_player(players[player]['player_key'])
+        return 0
+    def find_free_agent(self, player_name, league):
+        free_agents = league.free_agents()
+        for player in free_agents:
+            if free_agents[player]['name'] == player_name:
+                return league.to_player(free_agents[player]['player_key'])
+        return 0
+    def find_player_id(self, player_name):
+        player_name = player_name.replace(" ", "%20")
+        url = "https://www.balldontlie.io/api/v1/players?search=" + player_name
+        response = requests.get(url)
+        data = response.json()
+        player_id = data['data']
 
 
 
