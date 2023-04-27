@@ -8,6 +8,8 @@ stats = ['FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV']
 # Description: Helper functions for the Fantasy Basketball App
 # updated helper functions
 def round_up(num):
+    if num == 0.0:
+        return 0.0
     other_num = round(num % 0.1, 10)
     if ((num * 10) % 1 == 0):
         return num
