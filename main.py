@@ -8,24 +8,12 @@ import data.classes as classes
 from PyQt5.QtWidgets import *
 
 def main():
-    nbaApi = classes.NBAApiClassHelper()
-    player = nbaApi.get_player_stats("Lebron James", 5)
-    player2 = helpers.nba_stats_grabber("Lebron James")
-    player.display()
-    player2.display()
+    yahoo_fantasy_api = classes.YahooFantasyApi('outh2.json')
+    yahoo_fantasy_api.get_league()
+    
+    # this is just a test function to see if I can get the data I want from the yahoo api
+    yahoo_fantasy_api.find_and_compare_two_teams()
 
-    # league = classes.YahooFantasyApi('outh2.json')
-    # league.get_league()
-    # print("Enter the two teams you would like to compare")
-    # team1_name = input("Enter first team name: ")
-    # team2_name = input("Enter second team name: ")
-    # print("------------------------------------")
-    # team1 = league.get_team(team1_name)
-    # team2 = league.get_team(team2_name)
-    # team1.display()
-    # team2.display()
-    # comparison = classes.Analyzer(team1, team2)
-    # comparison.display()
  
 
 if __name__ == "__main__":

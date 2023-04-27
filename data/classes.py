@@ -114,11 +114,14 @@ class Team:
         return self.players.__len__()
     def display(self):
         table_data = [self.__name__(), self.return_fg_z_score(), self.return_ft_z_score(), self.return_threes_average(), self.return_pts_average(), self.return_reb_average(), self.return_ast_average(), self.return_stl_average(), self.return_blk_average(), self.return_tov_average()]
-        print(tabulate([table_data], headers = ['Name', 'FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
+        print('---------------------------------------------------------------------------------------------')
+        print(tabulate([table_data], headers = ['Name          ', 'FG%', 'FT%', '3PM', 'PTS', 'REB', 'AST', 'STL', 'BLK', 'TOV'], tablefmt = 'orgtbl'))
+        print('---------------------------------------------------------------------------------------------')
 # takes two teams to initialize this class
 # will compare the two teams and recommend a player to trade for
 class Analyzer:
     def __init__(self, team1, team2):
+        self.teamStats = None
         self.team1 = team1
         self.team2 = team2
     def team_comparison(self):
@@ -132,7 +135,14 @@ class Analyzer:
         team_stats[6] = self.team1.return_stl_average() - self.team2.return_stl_average()
         team_stats[7] = self.team1.return_blk_average() - self.team2.return_blk_average()
         team_stats[8] = self.team1.return_tov_average() - self.team2.return_tov_average()
+        self.teamStats = team_stats
         return team_stats
+    def get_lowest_stat(self):
+        stat_closest_to_zero = 0
+        for i in range(0, self.teamStats.__len__()):
+            if (self.teamStats[i] < self.teamStats[stat_closest_to_zero]):
+                stat_closest_to_zero = i
+        return stat_closest_to_zero
     def display(self):
         comparing_team_stats = self.team_comparison()
         table_data = [self.team_comparison()]
@@ -150,34 +160,43 @@ class YahooFantasyApi:
         # get game object
         gm = yfa.Game(sc, 'nba')
         # create a league object of OGLeague(code 418.l.16470)
-        lg = gm.league_ids(c.CURRENT_YEAR)
+        lg = gm.league_ids(constants.CURRENT_YEAR)
         self.league = gm.to_league(lg[1])
-
+        return
+    def find_and_compare_two_teams(self):
+        # initialize the NBA API class
+        nba_api = NBAApiClassHelper()
+        # get the teams in the league
         teams = self.league.teams()
         for team in teams:
             print(teams[team]['name'])
-        return 0
-    def find_and_compare_two_teams(self):
         print("------------------------------------")
         print("Enter the two teams you would like to compare")
         team1_name = input("Enter first team name: ")
         team2_name = input("Enter second team name: ")
         print("------------------------------------")
+        num_of_games_to_be_used = nba_api.number_of_games()
+        self.team1 = team1_name
+        self.team2 = team2_name
+
         team1 = helpers.find_team(team1_name, self.league)
         team2 = helpers.find_team(team2_name, self.league)
+        # using the yahoo api, get the roster of each team
         roster1 = team1.roster()
         roster2 = team2.roster()
+        # create team objects
         team1 = Team(team1_name)
         team2 = Team(team2_name)
         print("Created Team Objects...")
+
+        # get the stats for each player on each team
         for player in roster1:
             # create empty player object
             playerObj = Player(player['name'])
             # get player stats 
             # copy into player object
             print("Getting player stats for " + player['name'])
-
-            playerObj = h.nba_stats_grabber(player['name']).copy()
+            playerObj = nba_api.get_player_stats(player['name'], num_of_games_to_be_used)
             # add player object to team 
             team1.add_player(playerObj)
         print("Finished getting stats for " + team1_name)
@@ -187,14 +206,17 @@ class YahooFantasyApi:
             # get player stats 
             # copy into player object
             print("Getting player stats for " + player['name'])
-            playerObj = helpers.nba_stats_grabber(player['name']).copy()
+            playerObj = nba_api.get_player_stats(player['name'], num_of_games_to_be_used)
             # add player object to team 
             team2.add_player(playerObj)
         print("Finished getting stats for " + team2_name)
-        print(team1.display())
-        print(team2.display())
+
+        team1.display()
+        team2.display()
+
         comparison = Analyzer(team1, team2)
-        print(comparison.display())
+        comparison.display()
+
         return 0
     def get_team(self, team_name):
         team = helpers.find_team(team_name, self.league)
@@ -206,7 +228,7 @@ class YahooFantasyApi:
             # get player stats 
             # copy into player object
             print("Getting player stats for " + player['name'])
-            playerObj = h.nba_stats_grabber(player['name']).copy()
+            playerObj = helper.nba_stats_grabber(player['name']).copy()
             # add player object to team 
             team.add_player(playerObj)
         print("Finished getting stats for " + team_name)
@@ -247,7 +269,7 @@ class NBAApiClassHelper:
         if (num_of_games == 82):
             player_statistics = PlayerDashboardByLastNGames(player_id = player[0]['id']).overall_player_dashboard.get_data_frame()
         playerObj = classes.Player(player_name, player_statistics.iloc[0]['FGA'], player_statistics.iloc[0]['FTA'], player_statistics.iloc[0]['FGM'], player_statistics.iloc[0]['FTM'], player_statistics.iloc[0]['FG3M'], player_statistics.iloc[0]['PTS'], player_statistics.iloc[0]['REB'], player_statistics.iloc[0]['AST'], player_statistics.iloc[0]['STL'], player_statistics.iloc[0]['BLK'], player_statistics.iloc[0]['TOV'], player_statistics.iloc[0]['GP'])
-        time.sleep(2)
+        time.sleep(1)
         print("Found Player: " + player_name)
         return playerObj
     def find_team(self, team_name, league):
