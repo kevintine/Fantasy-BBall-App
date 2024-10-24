@@ -9,4 +9,3 @@ Eventually it will be able to suggest players to go for to improve team stats.
 2: For now, pull data from txt files to fill out players and teams.
 3: Take player names and search them up on basketball reference for specific stats. 
 4: Add player totals and display overall team stats.
-5: Put it on a website to get a minimum working product. 
